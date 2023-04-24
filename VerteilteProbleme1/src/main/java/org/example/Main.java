@@ -1,11 +1,9 @@
 package org.example;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.nio.*;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
@@ -57,7 +55,17 @@ public class Main {
 
                             break;
                         case "DATA":
-
+                            System.out.println("Handling Data Packet");
+                            byte [] test = {'T','e','s','t'};
+                            ByteBuffer buf = ByteBuffer.allocate(8);
+                            buf.put(test);
+                            buf.flip();
+                            FileOutputStream f;
+                            f = new FileOutputStream("test.txt");
+                            FileChannel ch = f.getChannel();
+                            ch.write(buf);
+                            ch.close();
+                            buf.clear();
                             break;
                         case "HELP":
 
