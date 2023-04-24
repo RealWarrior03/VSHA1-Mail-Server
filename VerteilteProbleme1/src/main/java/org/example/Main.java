@@ -6,12 +6,13 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(new InetSocketAddress("localhost",25));
+        serverSocketChannel.bind(new InetSocketAddress("localhost",2525));
 
 
         serverSocketChannel.configureBlocking(false);
@@ -42,8 +43,40 @@ public class Main {
                     buffer.get(bytes);
                     String message = new String(bytes);
                     System.out.println("Received message: " + message);
+                    String response = "Antwort";
+                    clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
+
+                    switch(message){
+                        case "HELO":
+
+                            break;
+                        case "MAIL FROM":
+
+                            break;
+                        case "RCPT TO":
+
+                            break;
+                        case "DATA":
+
+                            break;
+                        case "HELP":
+
+                            break;
+                        case "QUIT":
+
+                            break;
+                        default:
+
+
+                    }
+
+
+
+
+                    /*
                     clientSocketChannel.close();//!!Falsch!!
                     System.out.println("Client disconnected!");
+                    */
                 }
             }
             selector.selectedKeys().clear();

@@ -12,7 +12,7 @@ public class EchoClient {
 
     public static void main(String[] args) {
         EchoClient ec = new EchoClient();
-        ec.sendMessage("HELO");
+        ec.sendMessage("testtest");
     }
 
     public static EchoClient start() {
@@ -29,7 +29,7 @@ public class EchoClient {
 
     private EchoClient() {
         try {
-            client = SocketChannel.open(new InetSocketAddress("localhost", 25));
+            client = SocketChannel.open(new InetSocketAddress("localhost", 2525));
             buffer = ByteBuffer.allocate(256);
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,6 +42,7 @@ public class EchoClient {
         try {
             client.write(buffer);
             buffer.clear();
+            buffer = ByteBuffer.allocate(256);
             client.read(buffer);
             response = new String(buffer.array()).trim();
             System.out.println("response=" + response);
