@@ -43,12 +43,11 @@ public class Main {
                     buffer.get(bytes);
                     String message = new String(bytes);
                     System.out.println("Received message: " + message);
-                    String response = "Antwort";
-                    clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
+                    String response = "500";
 
                     switch(message){
                         case "HELO":
-
+                            response = "250";
                             break;
                         case "MAIL FROM":
 
@@ -69,7 +68,7 @@ public class Main {
 
 
                     }
-
+                clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
 
 
 
