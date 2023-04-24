@@ -31,6 +31,8 @@ public class Main {
                     clientSocketChannel.configureBlocking(false);
                     clientSocketChannel.register(selector, SelectionKey.OP_READ);
                     System.out.println("Client connected!");
+                    String response = "220";
+                    clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
                 } else if (key.isReadable()) {
                     // handle the incoming data from the client
                     SocketChannel clientSocketChannel = (SocketChannel) key.channel();
@@ -40,6 +42,7 @@ public class Main {
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
                     String message = new String(bytes);
+                    message = message.toUpperCase();
                     System.out.println("Received message: " + message);
                     String response = "500";
 
@@ -76,7 +79,7 @@ public class Main {
 
 
                     }
-                clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
+                    clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
 
 
 
