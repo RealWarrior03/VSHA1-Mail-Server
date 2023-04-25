@@ -31,7 +31,16 @@ public class Main {
                     clientSocketChannel.configureBlocking(false);
                     clientSocketChannel.register(selector, SelectionKey.OP_READ);
                     System.out.println("Client connected!");
-                    String response = "220";
+
+                    try {
+                        Charset messageCharset = StandardCharsets.US_ASCII;
+                    } catch (UnsupportedCharsetException uce) {
+                        System.err.println("Cannot create charset for this application. Exiting...");
+                        System.exit(1);
+                    }
+                    String hostname = java.net.InetAddress.getLocalHost().getHostName().getBytes(messageCharset);
+
+                    String response = "220 localhost Simple Mail Transfer Service Ready";
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
                 } else if (key.isReadable()) {
                     // handle the incoming data from the client
@@ -45,10 +54,11 @@ public class Main {
                     message = message.toUpperCase();
                     System.out.println("Received message: " + message);
                     String response = "500";
+                    System.out.println("test");
 
                     switch(message){
                         case "HELO":
-                            response = "250";
+                            response = "250 OK";
                             break;
                         case "MAIL FROM":
 
@@ -92,4 +102,63 @@ public class Main {
             selector.selectedKeys().clear();
         }
     }
+
+    //checks which command is sent by the client
+    private String filterCommand(String message){
+
+        switch(message.substring(0, Math.min(message.length(), 4))){ //check commands with len 4
+            case "HELO":
+
+                break;
+            case "DATA":
+
+                break;
+            case "HELP":
+
+                break;
+            case "QUIT":
+
+                break;
+            default:
+                if(message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")){
+
+                }else if(message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")){
+                    
+                }
+        }
+
+
+        switch(message){
+            case "HELO":
+
+                break;
+            case "MAIL FROM":
+
+                break;
+            case "RCPT TO":
+
+                break;
+            case "DATA":
+                System.out.println("Handling Data Packet");
+                byte [] test = {'T','e','s','t'};
+                ByteBuffer buf = ByteBuffer.allocate(8);
+                buf.put(test);
+                buf.flip();
+                FileOutputStream f;
+                f = new FileOutputStream("test.txt");
+                FileChannel ch = f.getChannel();
+                ch.write(buf);
+                ch.close();
+                buf.clear();
+                break;
+            case "HELP":
+
+                break;
+            case "QUIT":
+
+                break;
+            default:
+
+    }
+
 }
