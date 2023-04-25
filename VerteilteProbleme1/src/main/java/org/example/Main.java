@@ -46,7 +46,7 @@ public class Main {
                     // handle the incoming data from the client
                     SocketChannel clientSocketChannel = (SocketChannel) key.channel();
                     ByteBuffer buffer = ByteBuffer.allocate(1024);
-                    clientSocketChannel.read(buffer);
+                    clientSocketChannel.read(buffer);  //TODO implement termination of reading if \r\n(?)
                     buffer.flip();
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
@@ -56,15 +56,10 @@ public class Main {
                     String response = "500";
                     System.out.println("test");
 
-                    switch(message){
+                    //checks which command is sent by the client
+                    switch (message.substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                         case "HELO":
-                            response = "250 OK";
-                            break;
-                        case "MAIL FROM":
-
-                            break;
-                        case "RCPT TO":
-
+                            response = "250 OK";        //TODO rückmeldung sollte "250 server_name" sein oder?
                             break;
                         case "DATA":
                             System.out.println("Handling Data Packet");
@@ -85,13 +80,14 @@ public class Main {
                         case "QUIT":
 
                             break;
-                        default:
+                        default: //command doesn't match any len 4 command
+                            if(message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
 
+                            } else if(message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
 
+                            }
                     }
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
-
-
 
                     /*
                     clientSocketChannel.close();//!!Falsch!!
@@ -102,63 +98,4 @@ public class Main {
             selector.selectedKeys().clear();
         }
     }
-
-    //checks which command is sent by the client
-    private String filterCommand(String message){
-
-        switch(message.substring(0, Math.min(message.length(), 4))){ //check commands with len 4
-            case "HELO":
-
-                break;
-            case "DATA":
-
-                break;
-            case "HELP":
-
-                break;
-            case "QUIT":
-
-                break;
-            default:
-                if(message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")){
-
-                }else if(message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")){
-                    
-                }
-        }
-
-
-        switch(message){
-            case "HELO":
-
-                break;
-            case "MAIL FROM":
-
-                break;
-            case "RCPT TO":
-
-                break;
-            case "DATA":
-                System.out.println("Handling Data Packet");
-                byte [] test = {'T','e','s','t'};
-                ByteBuffer buf = ByteBuffer.allocate(8);
-                buf.put(test);
-                buf.flip();
-                FileOutputStream f;
-                f = new FileOutputStream("test.txt");
-                FileChannel ch = f.getChannel();
-                ch.write(buf);
-                ch.close();
-                buf.clear();
-                break;
-            case "HELP":
-
-                break;
-            case "QUIT":
-
-                break;
-            default:
-
-    }
-
 }
