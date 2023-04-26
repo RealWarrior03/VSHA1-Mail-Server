@@ -5,9 +5,11 @@ import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Set;
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.bind(new InetSocketAddress("localhost",2525));
@@ -18,6 +20,8 @@ public class Main {
 
         Selector selector = Selector.open();
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+
+        HashMap<SocketChannel,MailInfo> activeMailInfos = new HashMap<>();
 
         // listen for incoming client connections
         System.out.println("Server listening on port 2525");
@@ -48,10 +52,10 @@ public class Main {
                             response = "250";
                             break;
                         case "MAIL FROM":
-
+                            activeMailInfos.put(clientSocketChannel,new MailInfo(clientSocketChannel));
                             break;
                         case "RCPT TO":
-
+                            activeMailInfos.get(clientSocketChannel).addRCPT(s);
                             break;
                         case "DATA":
                             System.out.println("Handling Data Packet");

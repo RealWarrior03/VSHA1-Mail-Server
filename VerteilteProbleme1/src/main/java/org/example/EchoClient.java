@@ -12,7 +12,7 @@ public class EchoClient {
 
     public static void main(String[] args) {
         EchoClient ec = new EchoClient();
-        ec.sendMessage("HELO");
+        ec.sendMessage("testtest");
     }
 
     public static EchoClient start() {
