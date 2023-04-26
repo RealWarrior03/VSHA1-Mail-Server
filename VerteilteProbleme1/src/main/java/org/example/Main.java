@@ -55,7 +55,7 @@ public class Main {
                             activeMailInfos.put(clientSocketChannel,new MailInfo(clientSocketChannel));
                             break;
                         case "RCPT TO":
-                            activeMailInfos.get(clientSocketChannel).addRCPT(s);
+                            //activeMailInfos.get(clientSocketChannel).addRCPT();
                             break;
                         case "DATA":
                             System.out.println("Handling Data Packet");
