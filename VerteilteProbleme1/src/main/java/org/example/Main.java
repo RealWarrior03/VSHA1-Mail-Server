@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class Main {
-
     public static void main(String[] args) throws IOException {
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.bind(new InetSocketAddress("localhost",2525));
@@ -35,19 +34,33 @@ public class Main {
                     clientSocketChannel.configureBlocking(false);
                     clientSocketChannel.register(selector, SelectionKey.OP_READ);
                     System.out.println("Client connected!");
+
+                    try {
+                        Charset messageCharset = StandardCharsets.US_ASCII;
+                    } catch (UnsupportedCharsetException uce) {
+                        System.err.println("Cannot create charset for this application. Exiting...");
+                        System.exit(1);
+                    }
+                    String hostname = java.net.InetAddress.getLocalHost().getHostName().getBytes(messageCharset);
+
+                    String response = "220 localhost Simple Mail Transfer Service Ready";
+                    clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
                 } else if (key.isReadable()) {
                     // handle the incoming data from the client
                     SocketChannel clientSocketChannel = (SocketChannel) key.channel();
                     ByteBuffer buffer = ByteBuffer.allocate(1024);
-                    clientSocketChannel.read(buffer);
+                    clientSocketChannel.read(buffer);  //TODO implement termination of reading if \r\n(?)
                     buffer.flip();
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
                     String message = new String(bytes);
+                    message = message.toUpperCase();
                     System.out.println("Received message: " + message);
                     String response = "500";
+                    System.out.println("test");
 
-                    switch(message){
+                    //checks which command is sent by the client
+                    switch (message.substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                         case "HELO":
                             response = "250";
                             break;
@@ -76,13 +89,14 @@ public class Main {
                         case "QUIT":
 
                             break;
-                        default:
+                        default: //command doesn't match any len 4 command
+                            if(message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
 
+                            } else if(message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
 
+                            }
                     }
-                clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
-
-
+                    clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
 
                     /*
                     clientSocketChannel.close();//!!Falsch!!
