@@ -7,6 +7,7 @@ import java.nio.channels.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.HashMap;
 import java.util.Set;
 
 public class Main {
@@ -20,6 +21,8 @@ public class Main {
 
         Selector selector = Selector.open();
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+
+        HashMap<SocketChannel,MailInfo> activeMailInfos = new HashMap<>();
 
         // listen for incoming client connections
         System.out.println("Server listening on port 2525");
@@ -85,9 +88,16 @@ public class Main {
                             break;
                         default: //command doesn't match any len 4 command
                             if(message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
-
+                                String rcpt = message.substring(9,message.length()-4);
+                                activeMailInfos.get(clientSocketChannel).addRCPT(rcpt);
+                                response = "250 OK\r\n";
                             } else if(message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
-
+                                activeMailInfos.put(clientSocketChannel,new MailInfo(clientSocketChannel));
+                                String sender = message.substring(11,message.length()-4); // TODO: Ersetzen durch eigentliche Message
+                                activeMailInfos.get(clientSocketChannel).setSender(sender);
+                                response = "250 OK\r\n";
+                            } else {
+                                response = "500 Command unrecognized, send \"HELP\"  for more information.\r\n";
                             }
                     }
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
