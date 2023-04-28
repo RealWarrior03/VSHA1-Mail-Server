@@ -1,0 +1,12 @@
+#Ignore everything
+*
+
+#Do not ignore these files
+!.gitignore
+!Main.java
+!EchoClient.java
+!SMTPClient.java
+!SMTPClientState.java
+
+#The files above are added, disregarding in which subdirectory they are located
+!*/
