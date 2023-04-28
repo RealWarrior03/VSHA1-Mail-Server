@@ -1,10 +1,12 @@
-package org.example;
+package vs_uebung_2_gruppe_31;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Set;
 
 public class Main {

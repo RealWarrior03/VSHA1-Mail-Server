@@ -1,4 +1,4 @@
-package org.example;
+package vs_uebung_2_gruppe_31;
 
 import java.nio.ByteBuffer;
 
