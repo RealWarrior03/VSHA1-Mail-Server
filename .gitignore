@@ -7,6 +7,7 @@
 !EchoClient.java
 !SMTPClient.java
 !SMTPClientState.java
+!MailInfo.java
 
 #The files above are added, disregarding in which subdirectory they are located
 !*/
