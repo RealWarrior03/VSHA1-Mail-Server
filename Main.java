@@ -85,9 +85,6 @@ public class Main {
                     if (!readCommandLine(clientSocketChannel, buffer))
                         continue;
 
-                    clientSocketChannel.read(buffer);  //TODO implement termination of reading if \r\n(?)
-                    System.out.println("finished reading buffer");
-                    buffer.flip();
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
                     String message = new String(bytes);
