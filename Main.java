@@ -68,6 +68,9 @@ public class Main {
                             response = "250 OK\r\n";        //TODO rückmeldung sollte "250 server_name" sein oder?
                             break;
                         case "DATA":
+                            
+
+
                             System.out.println("Handling Data Packet");
                             byte [] test = {'T','e','s','t'};
                             ByteBuffer buf = ByteBuffer.allocate(8);
@@ -125,12 +128,12 @@ public class Main {
                             break;
                         default: //command doesn't match any len 4 command
                             if(message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
-                                String rcpt = message.substring(9,message.length()-4);
+                                String rcpt = message.substring(9,message.length()-2);
                                 activeMailInfos.get(clientSocketChannel).addRCPT(rcpt);
                                 response = "250 OK\r\n";
                             } else if(message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
                                 activeMailInfos.put(clientSocketChannel,new MailInfo(clientSocketChannel));
-                                String sender = message.substring(11,message.length()-4); // TODO: Ersetzen durch eigentliche Message
+                                String sender = message.substring(11,message.length()-2); // TODO: Ersetzen durch eigentliche Message
                                 activeMailInfos.get(clientSocketChannel).setSender(sender);
                                 response = "250 OK\r\n";
                             } else {
