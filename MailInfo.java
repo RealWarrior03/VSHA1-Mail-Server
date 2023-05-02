@@ -9,6 +9,7 @@ public class MailInfo {
     Stack<String> RCPT;
     SocketChannel channel;
     String data;
+    boolean isWriting;
     MailInfo(SocketChannel channel){
         this.channel=channel;
         RCPT = new Stack<>();
@@ -34,4 +35,7 @@ public class MailInfo {
         data = data.concat(s);
     }
 
+    public boolean getIsWriting() {
+        return isWriting;
+    }
 }

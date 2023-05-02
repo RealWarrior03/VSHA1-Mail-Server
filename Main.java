@@ -11,9 +11,40 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class Main {
+
+    // taken from the client
+    private static boolean readCommandLine(SocketChannel socketChannel, ByteBuffer buffer) throws IOException {
+
+        boolean foundHyphen = false;
+        int pos = buffer.position();
+
+        socketChannel.read(buffer);
+
+        for (int i = pos; i < buffer.position(); i++) {
+
+            if (buffer.get(i) == '-' && (i == 3)) {
+                foundHyphen = true;
+            }
+
+            if (buffer.get(i) == '\n') {
+                if ((i - 1) >= 0 && buffer.get(i - 1) == '\r') {
+                    if (foundHyphen) {
+                        foundHyphen = false;
+                    } else {
+                        buffer.flip();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static void main(String[] args) throws IOException {
+        String hostname = java.net.InetAddress.getLocalHost().getHostName();
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(new InetSocketAddress("localhost",2525));
+        serverSocketChannel.bind(new InetSocketAddress(hostname, 2525));
 
 
         serverSocketChannel.configureBlocking(false);
@@ -43,14 +74,16 @@ public class Main {
                         System.err.println("Cannot create charset for this application. Exiting...");
                         System.exit(1);
                     }
-                    //String hostname = java.net.InetAddress.getLocalHost().getHostName().getBytes(messageCharset);
 
-                    String response = "220 127.0.0.1 Simple Mail Transfer Service Ready\r\n";
+                    String response = "220" + hostname + "Simple Mail Transfer Service Ready\r\n";
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
                 } else if (key.isReadable()) {
                     // handle the incoming data from the client
                     SocketChannel clientSocketChannel = (SocketChannel) key.channel();
                     ByteBuffer buffer = ByteBuffer.allocate(1024);
+
+                    if (!readCommandLine(clientSocketChannel, buffer))
+                        continue;
 
                     clientSocketChannel.read(buffer);  //TODO implement termination of reading if \r\n(?)
                     System.out.println("finished reading buffer");
@@ -67,7 +100,7 @@ public class Main {
                     switch (message.substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                         case "HELO":
                             payload = message.substring(4, message.length()-2);
-                            response = "250 OK\r\n";        //TODO rückmeldung sollte "250 server_name" sein oder?
+                            response = "250" + hostname + "\r\n";
                             break;
                         case "DATA":
                             payload = message.substring(4, message.length()-2);
