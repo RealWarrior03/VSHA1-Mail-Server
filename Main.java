@@ -115,6 +115,23 @@ public class Main {
                             break;
                         case "HELP":
                             payload = message.substring(4, message.length()-2);
+                            String code = "214";
+
+                            response = code + """
+                                     The following commands are supported:
+                                    HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.
+                                    MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).
+                                    RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.
+                                    DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.
+                                    HELP [command] - With the HELP command, the client requests a list of commands the server supports. HELP may be used with an argument (a specific command).
+                                    QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.
+                                    
+                                    The explanantions of the commands above are taken from the following website: https://mailtrap.io/blog/smtp-commands-and-responses/#HELP
+                                    \r\n
+                                    """;
+
+                            //TODO different help cases?
+                            /*
                             if(message.substring(0, Math.min(message.length(), 9)).equals("HELP HELO")) { //check for rcpt to command
                                 response = "help for HELO coming soon\r\n";
                             } else if(message.substring(0, Math.min(message.length(), 14)).equals("HELP MAIL FROM")) { //check for mail from command
@@ -126,8 +143,8 @@ public class Main {
                             } else if(message.substring(0, Math.min(message.length(), 9)).equals("HELP QUIT")) { //check for mail from command
                                 response = "help for QUIT coming soon\r\n";
                             } else if (message.substring(0, Math.min(message.length(), 4)).equals("HELP")) {
-                                response = """
-                                    The following commands are supported:
+                                response = code + """
+                                     The following commands are supported:
                                     HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.
                                     MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).
                                     RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.
@@ -139,8 +156,8 @@ public class Main {
                                     \r\n
                                     """;
                             } else {
-                                response = """
-                                    The following commands are supported:
+                                response = code + """
+                                     The following commands are supported:
                                     HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.
                                     MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).
                                     RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.
@@ -153,6 +170,8 @@ public class Main {
                                     """;
                             }
                             System.out.println(response);
+                             */
+
                             break;
                         case "QUIT":
                             payload = message.substring(4, message.length()-2);
