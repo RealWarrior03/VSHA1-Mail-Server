@@ -62,15 +62,15 @@ public class Main {
                     System.out.println("Received message: " + message);
                     String response = "500\r\n";
 
+                    String payload;
                     //checks which command is sent by the client
                     switch (message.substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                         case "HELO":
+                            payload = message.substring(4, message.length()-2);
                             response = "250 OK\r\n";        //TODO rückmeldung sollte "250 server_name" sein oder?
                             break;
                         case "DATA":
-                            
-
-
+                            payload = message.substring(4, message.length()-2);
                             System.out.println("Handling Data Packet");
                             byte [] test = {'T','e','s','t'};
                             ByteBuffer buf = ByteBuffer.allocate(8);
@@ -84,6 +84,7 @@ public class Main {
                             buf.clear();
                             break;
                         case "HELP":
+                            payload = message.substring(4, message.length()-2);
                             if(message.substring(0, Math.min(message.length(), 9)).equals("HELP HELO")) { //check for rcpt to command
                                 response = "help for HELO coming soon\r\n";
                             } else if(message.substring(0, Math.min(message.length(), 14)).equals("HELP MAIL FROM")) { //check for mail from command
@@ -124,16 +125,18 @@ public class Main {
                             System.out.println(response);
                             break;
                         case "QUIT":
-
+                            payload = message.substring(4, message.length()-2);
                             break;
                         default: //command doesn't match any len 4 command
                             if(message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
-                                String rcpt = message.substring(9,message.length()-2);
+                                payload = message.substring(9, message.length()-2);
+                                String rcpt = message.substring(9,message.length()-4);
                                 activeMailInfos.get(clientSocketChannel).addRCPT(rcpt);
                                 response = "250 OK\r\n";
                             } else if(message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
+                                payload = message.substring(11, message.length()-2);
                                 activeMailInfos.put(clientSocketChannel,new MailInfo(clientSocketChannel));
-                                String sender = message.substring(11,message.length()-2); // TODO: Ersetzen durch eigentliche Message
+                                String sender = message.substring(11,message.length()-4); // TODO: Ersetzen durch eigentliche Message
                                 activeMailInfos.get(clientSocketChannel).setSender(sender);
                                 response = "250 OK\r\n";
                             } else {
