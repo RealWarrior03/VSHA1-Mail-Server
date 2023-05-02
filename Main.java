@@ -126,6 +126,7 @@ public class Main {
                             break;
                         case "QUIT":
                             payload = message.substring(4, message.length()-2);
+                            response =  "221"; //TODO + hostname
                             break;
                         default: //command doesn't match any len 4 command
                             if(message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
