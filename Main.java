@@ -75,7 +75,7 @@ public class Main {
                         System.exit(1);
                     }
 
-                    String response = "220" + hostname + "Simple Mail Transfer Service Ready\r\n";
+                    String response = "220 " + hostname + " Simple Mail Transfer Service Ready\r\n";
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
                 } else if (key.isReadable()) {
                     // handle the incoming data from the client
@@ -100,7 +100,7 @@ public class Main {
                     switch (message.substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                         case "HELO":
                             payload = message.substring(4, message.length()-2);
-                            response = "250" + hostname + "\r\n";
+                            response = "250 " + hostname + " \r\n";
                             break;
                         case "DATA":
                             payload = message.substring(4, message.length()-2);
@@ -159,7 +159,8 @@ public class Main {
                             break;
                         case "QUIT":
                             payload = message.substring(4, message.length()-2);
-                            response =  "221"; //TODO + hostname
+                            response =  "221 " + hostname;
+                            //TODO maybe kick client from selectors
                             break;
                         default: //command doesn't match any len 4 command
                             if(message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
