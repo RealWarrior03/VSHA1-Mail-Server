@@ -19,6 +19,7 @@ public class MailInfo {
     MailInfo(SocketChannel channel){
         this.channel=channel;
         RCPT = new Stack<>();
+        isWriting=false;
     }
 
     public String getSender() {
