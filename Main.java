@@ -103,22 +103,26 @@ public class Main {
                         if (!activeMailInfos.get(clientSocketChannel).isWriting) { // Wenn Datentransfer fertig ist
                             activeMailInfos.get(clientSocketChannel).storeMail(); // Speicher sie und entferne sie aus der Datenstruktur
                             activeMailInfos.remove(clientSocketChannel);
+                            response = "250 OK";
                         }
 
                     } else {
                         switch (message.substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                             case "HELO":
-                                payload = message.substring(4, message.length() - 3);
+                                payload = message.substring(4, message.length() - 2);
                                 response = "250 OK\r\n";        //TODO rückmeldung sollte "250 server_name" sein oder?
                                 break;
                             case "DATA":
-                                payload = message.substring(4, message.length() - 3);       //#TODO EdgeCase dass Data + Ende in einer Nachricht
+                                payload = message.substring(4, message.length() - 2);       //#TODO EdgeCase dass Data + Ende in einer Nachricht
                                 activeMailInfos.get(clientSocketChannel).setIsWriting(true);
-                                activeMailInfos.get(clientSocketChannel).appendData(payload);
+                                try{
+                                    activeMailInfos.get(clientSocketChannel).appendData(payload);
+                                }catch (NullPointerException ignored){}
                                 System.out.println("Handling Data Packet");
+                                response = "354 Start mail input; end with <CRLF>.<CRLF>";
                                 break;
                             case "HELP":
-                                payload = message.substring(4, message.length() - 3);
+                                payload = message.substring(4, message.length() - 2);
                                 if (message.substring(0, Math.min(message.length(), 9)).equals("HELP HELO")) { //check for rcpt to command
                                     response = "help for HELO coming soon\r\n";
                                 } else if (message.substring(0, Math.min(message.length(), 14)).equals("HELP MAIL FROM")) { //check for mail from command
@@ -159,15 +163,15 @@ public class Main {
                                 System.out.println(response);
                                 break;
                             case "QUIT":
-                                payload = message.substring(4, message.length() - 3);
+                                payload = message.substring(4, message.length() - 2);
                                 break;
                             default: //command doesn't match any len 4 command
                                 if (message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
-                                    payload = message.substring(9, message.length() - 3);
+                                    payload = message.substring(9, message.length() - 2);
                                     activeMailInfos.get(clientSocketChannel).addRCPT(payload);
                                     response = "250 OK\r\n";
                                 } else if (message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
-                                    payload = message.substring(11, message.length() - 3);
+                                    payload = message.substring(11, message.length() - 2);
                                     activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
                                     activeMailInfos.get(clientSocketChannel).setSender(payload);
                                     response = "250 OK\r\n";
