@@ -110,7 +110,7 @@ public class Main {
                         switch (message.substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                             case "HELO":
                                 payload = message.substring(4, message.length() - 2);
-                                response = "250 OK\r\n";        //TODO rückmeldung sollte "250 server_name" sein oder?
+                                response = "250 " + hostname + " \r\n";
                                 break;
                             case "DATA":
                                 payload = message.substring(4, message.length() - 2);       //#TODO EdgeCase dass Data + Ende in einer Nachricht
@@ -120,83 +120,6 @@ public class Main {
                                 }catch (NullPointerException ignored){}
                                 System.out.println("Handling Data Packet");
                                 response = "354 Start mail input; end with <CRLF>.<CRLF>";
-                                break;
-                            case "HELP":
-                                payload = message.substring(4, message.length() - 2);
-                                if (message.substring(0, Math.min(message.length(), 9)).equals("HELP HELO")) { //check for rcpt to command
-                                    response = "help for HELO coming soon\r\n";
-                                } else if (message.substring(0, Math.min(message.length(), 14)).equals("HELP MAIL FROM")) { //check for mail from command
-                                    response = "help for MAIL FROM coming soon\r\n";
-                                } else if (message.substring(0, Math.min(message.length(), 12)).equals("HELP RCPT TO")) { //check for rcpt to command
-                                    response = "help for RCPT TO coming soon\r\n";
-                                } else if (message.substring(0, Math.min(message.length(), 9)).equals("HELP DATA")) { //check for mail from command
-                                    response = "help for DATA coming soon\r\n";
-                                } else if (message.substring(0, Math.min(message.length(), 9)).equals("HELP QUIT")) { //check for mail from command
-                                    response = "help for QUIT coming soon\r\n";
-                                } else if (message.substring(0, Math.min(message.length(), 4)).equals("HELP")) {
-                                    response = """
-                                            The following commands are supported:
-                                            HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.
-                                            MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).
-                                            RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.
-                                            DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.
-                                            HELP [command] - With the HELP command, the client requests a list of commands the server supports. HELP may be used with an argument (a specific command).
-                                            QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.
-                                                                                
-                                            The explanantions of the commands above are taken from the following website: https://mailtrap.io/blog/smtp-commands-and-responses/#HELP
-                                            \r\n
-                                            """;
-                                } else {
-                                    response = """
-                                            The following commands are supported:
-                                            HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.
-                                            MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).
-                                            RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.
-                                            DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.
-                                            HELP [command] - With the HELP command, the client requests a list of commands the server supports. HELP may be used with an argument (a specific command).
-                                            QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.
-                                                                                
-                                            The explanantions of the commands above are taken from the following website: https://mailtrap.io/blog/smtp-commands-and-responses/#HELP
-                                            \r\n
-                                            """;
-                                }
-                                System.out.println(response);
-                                break;
-                            case "QUIT":
-                                payload = message.substring(4, message.length() - 2);
-                                break;
-                            default: //command doesn't match any len 4 command
-                                if (message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
-                                    payload = message.substring(9, message.length() - 2);
-                                    activeMailInfos.get(clientSocketChannel).addRCPT(payload);
-                                    response = "250 OK\r\n";
-                                } else if (message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
-                                    payload = message.substring(11, message.length() - 2);
-                                    activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
-                                    activeMailInfos.get(clientSocketChannel).setSender(payload);
-                                    response = "250 OK\r\n";
-                                } else {
-                                    response = "500 Command unrecognized, send \"HELP\"  for more information.\r\n";
-                                }
-                        }
-                        switch (message.substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
-                            case "HELO":
-                                payload = message.substring(4, message.length() - 2);
-                                response = "250 " + hostname + " \r\n";
-                                break;
-                            case "DATA":
-                                payload = message.substring(4, message.length() - 2);
-                                System.out.println("Handling Data Packet");
-                                byte[] test = {'T', 'e', 's', 't'};
-                                ByteBuffer buf = ByteBuffer.allocate(8);
-                                buf.put(test);
-                                buf.flip();
-                                FileOutputStream f;
-                                f = new FileOutputStream("test.txt");
-                                FileChannel ch = f.getChannel();
-                                ch.write(buf);
-                                ch.close();
-                                buf.clear();
                                 break;
                             case "HELP":
                                 payload = message.substring(4, message.length() - 2);
