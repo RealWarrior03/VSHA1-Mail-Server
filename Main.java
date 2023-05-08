@@ -42,7 +42,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        String hostname = java.net.InetAddress.getLocalHost().getHostName();
+        //String hostname = java.net.InetAddress.getLocalHost().getHostName();
+        String hostname = "localhost";
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.bind(new InetSocketAddress(hostname, 2525)); // hab hostname durch "localhost ersetzt fdann gings wierder"
 
