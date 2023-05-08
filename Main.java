@@ -109,7 +109,7 @@ public class Main {
                     } else {
                         switch (message.toUpperCase().substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                             case "HELO":
-                                payload = message.substring(4, message.length() - 3);
+                                payload = message.substring(4, message.length() - 2);
                                 response = "250 " + hostname + " \r\n";
                                 break;
                             case "DATA":
