@@ -45,12 +45,12 @@ public class Main {
 
     public static int generateMessageID(LinkedList<Integer> idList) {
         Random rand = new Random();
-        Integer messageID = rand.nextInt(9999);
-        while (idList.contains(messageID)) {
-            messageID = rand.nextInt(9999);
+        Integer messageID = rand.nextInt(9999); //generate random number up to 9999
+        while (idList.contains(messageID)) { //if number is already used as an id
+            messageID = rand.nextInt(9999); //generate a new number
         }
-        idList.add(messageID);
-        return messageID;
+        idList.add(messageID); //store number as a used id
+        return messageID; //return the id
     }
 
     public static void main(String[] args) throws IOException {
@@ -108,16 +108,16 @@ public class Main {
 
                     String payload;
                     //checks which command is sent by the client
-                    if (activeMailInfos.containsKey(clientSocketChannel)&& activeMailInfos.get(clientSocketChannel).getIsWriting()) { // Client der die Nachricht geschickt hat ist gerade dabei Daten zu senden
+                    if (activeMailInfos.containsKey(clientSocketChannel)&& activeMailInfos.get(clientSocketChannel).getIsWriting()) { //client is currently transmitting data
                         response = "";
 
-                        if (message.substring(message.length() - 5).equals("\r\n.\r\n")) { // Client will Datenübertragung beenden
-                            activeMailInfos.get(clientSocketChannel).setIsWriting(false);
-                            message = message.substring(0, message.length() - 5);
+                        if (message.substring(message.length() - 5).equals("\r\n.\r\n")) { //client wants to finish data transmission
+                            activeMailInfos.get(clientSocketChannel).setIsWriting(false); //toggle isWriting back to false
+                            message = message.substring(0, message.length() - 5); //cut the signal for transmission stop from the actual message
                         }
-                        activeMailInfos.get(clientSocketChannel).appendData(message);//Übertragenen Daten werden an die Mail angehangen
-                        if (!activeMailInfos.get(clientSocketChannel).isWriting) { // Wenn Datentransfer fertig ist
-                            activeMailInfos.get(clientSocketChannel).storeMail(generateMessageID(messageIDs)); // Speicher sie und entferne sie aus der Datenstruktur
+                        activeMailInfos.get(clientSocketChannel).appendData(message);// transmitted data is appended to the mail
+                        if (!activeMailInfos.get(clientSocketChannel).isWriting) { // if data transfer is finished
+                            activeMailInfos.get(clientSocketChannel).storeMail(generateMessageID(messageIDs)); // save mail and remove it form the data structure
                             activeMailInfos.remove(clientSocketChannel);
                             response = "250 OK\r\n";
                         }
@@ -126,92 +126,62 @@ public class Main {
                         switch (message.toUpperCase().substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                             case "HELO":
                                 payload = message.substring(4, message.length() - 2);
-                                response = "250 " + hostname + " \r\n";
+                                response = "250 " + hostname + " \r\n"; //answer according to a received HELO message
                                 break;
                             case "DATA":
-                                activeMailInfos.get(clientSocketChannel).setIsWriting(true);
-                                System.out.println("Handling Data Packet");
-                                response = "354 Start mail input; end with <CRLF>.<CRLF>\r\n";
+                                activeMailInfos.get(clientSocketChannel).setIsWriting(true); //toggle isWriting to work with the next input as data for an e-mail
+                                System.out.println("Handling Data Packet"); //server side note of what is handled
+                                response = "354 Start mail input; end with <CRLF>.<CRLF>\r\n"; //inform client, that data is read until marking its end
                                 break;
                             case "HELP":
                                 payload = message.substring(4, message.length() - 2);
                                 String code = "214 ";
 
-                                response = code + """
-                                         The following commands are supported:
-                                        HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.
-                                        MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).
-                                        RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.
-                                        DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.
-                                        HELP [command] - With the HELP command, the client requests a list of commands the server supports. HELP may be used with an argument (a specific command).
-                                        QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.
-                                                                            
-                                        The explanantions of the commands above are taken from the following website: https://mailtrap.io/blog/smtp-commands-and-responses/#HELP
-                                        \r\n
-                                        """;
-
-                                //TODO different help cases?
-                            /*
-                            if(message.substring(0, Math.min(message.length(), 9)).equals("HELP HELO")) { //check for rcpt to command
-                                response = "help for HELO coming soon\r\n";
-                            } else if(message.substring(0, Math.min(message.length(), 14)).equals("HELP MAIL FROM")) { //check for mail from command
-                                response = "help for MAIL FROM coming soon\r\n";
-                            } else if(message.substring(0, Math.min(message.length(), 12)).equals("HELP RCPT TO")) { //check for rcpt to command
-                                response = "help for RCPT TO coming soon\r\n";
-                            } else if(message.substring(0, Math.min(message.length(), 9)).equals("HELP DATA")) { //check for mail from command
-                                response = "help for DATA coming soon\r\n";
-                            } else if(message.substring(0, Math.min(message.length(), 9)).equals("HELP QUIT")) { //check for mail from command
-                                response = "help for QUIT coming soon\r\n";
-                            } else if (message.substring(0, Math.min(message.length(), 4)).equals("HELP")) {
-                                response = code + """
-                                     The following commands are supported:
-                                    HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.
-                                    MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).
-                                    RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.
-                                    DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.
-                                    HELP [command] - With the HELP command, the client requests a list of commands the server supports. HELP may be used with an argument (a specific command).
-                                    QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.
-
-                                    The explanantions of the commands above are taken from the following website: https://mailtrap.io/blog/smtp-commands-and-responses/#HELP
-                                    \r\n
-                                    """;
-                            } else {
-                                response = code + """
-                                     The following commands are supported:
-                                    HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.
-                                    MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).
-                                    RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.
-                                    DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.
-                                    HELP [command] - With the HELP command, the client requests a list of commands the server supports. HELP may be used with an argument (a specific command).
-                                    QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.
-
-                                    The explanantions of the commands above are taken from the following website: https://mailtrap.io/blog/smtp-commands-and-responses/#HELP
-                                    \r\n
-                                    """;
-                            }
-                            System.out.println(response);
-                             */
-
+                                //if the client requests HELP for a specific command, the information for that command only is returned, otherwise a list of all commands is returned
+                                if (payload.equals(" HELO")) {
+                                    response = code + "HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.\r\n";
+                                } else if (payload.equals(" MAIL FROM")) {
+                                    response = code + "MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).\r\n";
+                                } else if (payload.equals(" RCPT TO")) {
+                                    response = code + "RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.\r\n";
+                                } else if (payload.equals(" DATA")) {
+                                    response = code + "DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.";
+                                } else if (payload.equals(" QUIT")) {
+                                    response = code + "QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.";
+                                } else {
+                                    response = code + """
+                                             The following commands are supported:
+                                            HELO - The HELO command initiates the SMTP session conversation. The client greets the server and introduces itself. As a rule, HELO is attributed with an argument that specifies the domain name or IP address of the SMTP client.
+                                            MAIL FROM - The MAIL FROM command initiates a mail transfer. As an argument, MAIL FROM includes a sender mailbox (reverse-path).
+                                            RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.
+                                            DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.
+                                            HELP [command] - With the HELP command, the client requests a list of commands the server supports. HELP may be used with an argument (a specific command).
+                                            QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.
+                                                                                
+                                            The explanantions of the commands above are taken from the following website: https://mailtrap.io/blog/smtp-commands-and-responses/#HELP
+                                            \r\n
+                                            """; //help for all supported commands is returned to the client
+                                }
                                 break;
                             case "QUIT":
                                 payload = message.substring(4, message.length() - 2);
-                                response = "221 " + hostname + "\r\n";
+                                response = "221 " + hostname + "\r\n"; //answer according to a received QUIT message
                                 //TODO maybe kick client from selectors
                                 break;
                             default: //command doesn't match any len 4 command
                                 if (message.toUpperCase().substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
-                                    payload = message.substring(9, message.length() - 2);
+                                    payload = message.substring(9, message.length() - 2); //get client name appended to the RCPT TO command
                                     String rcpt = payload;
-                                    activeMailInfos.get(clientSocketChannel).addRCPT(rcpt);
+                                    activeMailInfos.get(clientSocketChannel).addRCPT(rcpt); //add it to the list of known recipients
                                     response = "250 OK\r\n";
                                 } else if (message.toUpperCase().substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
-                                    payload = message.substring(11, message.length() - 2);
+                                    payload = message.substring(11, message.length() - 2); //get client name appended to the MAIL FROM command
                                     activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
                                     String sender = payload; // TODO: Ersetzen durch eigentliche Message
-                                    activeMailInfos.get(clientSocketChannel).setSender(sender);
+                                    activeMailInfos.get(clientSocketChannel).setSender(sender); //add the sender to the list of known senders
                                     response = "250 OK\r\n";
                                 } else {
-                                    response = "500 Command unrecognized, send \"HELP\"  for more information.\r\n";
+                                    response = "500 Command unrecognized, send \"HELP\"  for more information.\r\n"; //command not known, reminder to ask for help
                                 }
                         }
                     /*
