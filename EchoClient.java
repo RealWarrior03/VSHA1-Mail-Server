@@ -12,10 +12,14 @@ public class EchoClient {
 
     public static void main(String[] args) {
         EchoClient ec = new EchoClient();
-        ec.sendMessage("HELO\r\n\r\n");
-        ec.sendMessage("MAIL FROM: abc\r\n\r\n");
-        ec.sendMessage("RCPT TO: def\r\n\r\n");
-        ec.sendMessage("RCPT TO: gih\r\n\r\n");
+        ec.sendMessage("HELO\r\n");
+        ec.sendMessage("MAIL FROM: abc\r\n");
+        ec.sendMessage("RCPT TO: def\r\n");
+        ec.sendMessage("RCPT TO: gih\r\n");
+        ec.sendMessage("DATA\r\n");
+        ec.sendMessage("bliblablub\r\n.\r\n");
+
+
 
     }
 
@@ -33,7 +37,7 @@ public class EchoClient {
 
     private EchoClient() {
         try {
-            client = SocketChannel.open(new InetSocketAddress("localhost", 2525));
+            client = SocketChannel.open(new InetSocketAddress(java.net.InetAddress.getLocalHost().getHostName(), 2525));
             buffer = ByteBuffer.allocate(256);
         } catch (IOException e) {
             e.printStackTrace();

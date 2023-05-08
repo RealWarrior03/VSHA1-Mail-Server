@@ -44,7 +44,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         String hostname = java.net.InetAddress.getLocalHost().getHostName();
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(new InetSocketAddress(hostname, 2525));
+        serverSocketChannel.bind(new InetSocketAddress(hostname, 2525)); // hab hostname durch "localhost ersetzt fdann gings wierder"
 
 
         serverSocketChannel.configureBlocking(false);
@@ -113,7 +113,10 @@ public class Main {
                                 response = "250 " + hostname + " \r\n";
                                 break;
                             case "DATA":
-                                payload = message.substring(4, message.length() - 2);       //#TODO EdgeCase dass Data + Ende in einer Nachricht
+                                payload = message.substring(4, message.length() - 3);       //#TODO EdgeCase dass Data + Ende in einer Nachricht
+                                if(message.substring(message.length()-6) == "\r\n.\r\n"){
+                                    payload = message.substring(4,message.length()-6);
+                                }
                                 activeMailInfos.get(clientSocketChannel).setIsWriting(true);
                                 try{
                                     activeMailInfos.get(clientSocketChannel).appendData(payload);
