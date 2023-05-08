@@ -201,7 +201,7 @@ public class Main {
                                         payload = message.substring(11, message.length() - 2);
                                     }
                                     activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
-                                    String sender = message.substring(11, message.length() - 3); // TODO: Ersetzen durch eigentliche Message
+                                    String sender = message.substring(11, message.length() - 2); // TODO: Ersetzen durch eigentliche Message
                                     activeMailInfos.get(clientSocketChannel).setSender(sender);
                                     response = "250 OK\r\n";
                                 } else {
