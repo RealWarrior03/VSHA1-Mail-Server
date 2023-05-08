@@ -88,6 +88,7 @@ public class Main {
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
                     String message = new String(bytes);
+                    buffer.clear();
                     System.out.println("Received message: " + message);
                     String response = "500\r\n";
 
