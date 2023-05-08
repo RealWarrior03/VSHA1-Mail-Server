@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Random;
 import java.util.Set;
 
 public class Main {
@@ -41,7 +43,15 @@ public class Main {
         return false;
     }
 
-    
+    public static int generateMessageID(LinkedList<Integer> idList) {
+        Random rand = new Random();
+        Integer messageID = rand.nextInt(9999);
+        while (idList.contains(messageID)) {
+            messageID = rand.nextInt(9999);
+        }
+        idList.add(messageID);
+        return messageID;
+    }
 
     public static void main(String[] args) throws IOException {
         //String hostname = java.net.InetAddress.getLocalHost().getHostName();
@@ -57,6 +67,8 @@ public class Main {
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
         HashMap<SocketChannel, MailInfo> activeMailInfos = new HashMap<>();
+        LinkedList<Integer> messageIDs = new LinkedList<>();
+
 
         // listen for incoming client connections
         System.out.println("Server listening on port 2525");
@@ -103,7 +115,7 @@ public class Main {
                         }
                         activeMailInfos.get(clientSocketChannel).appendData(message);//Übertragenen Daten werden an die Mail angehangen
                         if (!activeMailInfos.get(clientSocketChannel).isWriting) { // Wenn Datentransfer fertig ist
-                            activeMailInfos.get(clientSocketChannel).storeMail(); // Speicher sie und entferne sie aus der Datenstruktur
+                            activeMailInfos.get(clientSocketChannel).storeMail(generateMessageID(messageIDs)); // Speicher sie und entferne sie aus der Datenstruktur
                             activeMailInfos.remove(clientSocketChannel);
                             response = "250 OK\r\n";
                         }
