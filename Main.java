@@ -109,7 +109,7 @@ public class Main {
                     } else {
                         switch (message.substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                             case "HELO":
-                                payload = message.substring(4, message.length() - 2);
+                                payload = message.substring(4, message.length() - 3);
                                 response = "250 " + hostname + " \r\n";
                                 break;
                             case "DATA":
@@ -125,7 +125,7 @@ public class Main {
                                 response = "354 Start mail input; end with <CRLF>.<CRLF>";
                                 break;
                             case "HELP":
-                                payload = message.substring(4, message.length() - 2);
+                                payload = message.substring(4, message.length() - 3);
                                 String code = "214";
 
                                 response = code + """
@@ -185,20 +185,20 @@ public class Main {
 
                                 break;
                             case "QUIT":
-                                payload = message.substring(4, message.length() - 2);
+                                payload = message.substring(4, message.length() - 3);
                                 response = "221 " + hostname;
                                 //TODO maybe kick client from selectors
                                 break;
                             default: //command doesn't match any len 4 command
                                 if (message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
-                                    payload = message.substring(9, message.length() - 2);
-                                    String rcpt = message.substring(9, message.length() - 4);
+                                    payload = message.substring(9, message.length() - 3);
+                                    String rcpt = payload;
                                     activeMailInfos.get(clientSocketChannel).addRCPT(rcpt);
                                     response = "250 OK\r\n";
                                 } else if (message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
-                                    payload = message.substring(11, message.length() - 2);
+                                    payload = message.substring(11, message.length() - 3);
                                     activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
-                                    String sender = message.substring(11, message.length() - 4); // TODO: Ersetzen durch eigentliche Message
+                                    String sender = message.substring(11, message.length() - 3); // TODO: Ersetzen durch eigentliche Message
                                     activeMailInfos.get(clientSocketChannel).setSender(sender);
                                     response = "250 OK\r\n";
                                 } else {
