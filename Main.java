@@ -114,10 +114,6 @@ public class Main {
                                 response = "250 " + hostname + " \r\n";
                                 break;
                             case "DATA":
-                                payload = message.substring(4, message.length() - 2);       //#TODO EdgeCase dass Data + Ende in einer Nachricht
-                                if(message.substring(message.length()-6) == "\r\n.\r\n"){
-                                    payload = message.substring(4,message.length()-6);
-                                }
                                 activeMailInfos.get(clientSocketChannel).setIsWriting(true);
                                 System.out.println("Handling Data Packet");
                                 response = "354 Start mail input; end with <CRLF>.<CRLF>\r\n";
