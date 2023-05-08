@@ -51,7 +51,7 @@ public class MailInfo {
         isWriting = a;
     }
 
-    public void storeMail() throws IOException {
+    public void storeMail(int messageID) throws IOException {
         ByteBuffer buf = ByteBuffer.allocate(data.length()*2);
         buf.put(data.getBytes());
         buf.flip();
@@ -59,7 +59,7 @@ public class MailInfo {
 
         for (String recipient: RCPT) {
             new File("./storedMails/" + recipient).mkdirs();
-            f = new FileOutputStream("./storedMails/"+recipient+"/"+sender+"_"+"MessageID");//#TODO Message ID
+            f = new FileOutputStream("./storedMails/"+recipient+"/"+sender+"_"+messageID);//#TODO Message ID
             FileChannel ch = f.getChannel();
             ch.write(buf);
             ch.close();
