@@ -43,7 +43,15 @@ public class Main {
         return false;
     }
 
-    
+    public static int generateMessageID(LinkedList<Integer> idList) {
+        Random rand = new Random();
+        Integer messageID = rand.nextInt(9999);
+        while (idList.contains(messageID)) {
+            messageID = rand.nextInt(9999);
+        }
+        idList.add(messageID);
+        return messageID;
+    }
 
     public static void main(String[] args) throws IOException {
         //String hostname = java.net.InetAddress.getLocalHost().getHostName();
