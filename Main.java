@@ -95,9 +95,9 @@ public class Main {
                     String payload;
                     //checks which command is sent by the client
                     if (activeMailInfos.containsKey(clientSocketChannel)&& activeMailInfos.get(clientSocketChannel).getIsWriting()) { // Client der die Nachricht geschickt hat ist gerade dabei Daten zu senden
-                        if (message.substring(message.length() - 6) == "\r\n.\r\n") { // Client will Datenübertragung beenden
+                        if (message.substring(message.length() - 5).equals("\r\n.\r\n")) { // Client will Datenübertragung beenden
                             activeMailInfos.get(clientSocketChannel).setIsWriting(false);
-                            message = message.substring(0, message.length() - 6);
+                            message = message.substring(0, message.length() - 5);
                         }
                         activeMailInfos.get(clientSocketChannel).appendData(message);//Übertragenen Daten werden an die Mail angehangen
                         if (!activeMailInfos.get(clientSocketChannel).isWriting) { // Wenn Datentransfer fertig ist

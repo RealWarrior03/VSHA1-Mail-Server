@@ -20,6 +20,7 @@ public class MailInfo {
         this.channel=channel;
         RCPT = new Stack<>();
         isWriting=false;
+        data = "";
     }
 
     public String getSender() {
