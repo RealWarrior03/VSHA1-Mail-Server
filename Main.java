@@ -185,12 +185,12 @@ public class Main {
                                 //TODO maybe kick client from selectors
                                 break;
                             default: //command doesn't match any len 4 command
-                                if (message.substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
+                                if (message.toUpperCase().substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
                                     payload = message.substring(9, message.length() - 2);
                                     String rcpt = payload;
                                     activeMailInfos.get(clientSocketChannel).addRCPT(rcpt);
                                     response = "250 OK\r\n";
-                                } else if (message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
+                                } else if (message.toUpperCase().substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
                                     payload = message.substring(11, message.length() - 2);
                                     activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
                                     String sender = payload; // TODO: Ersetzen durch eigentliche Message
