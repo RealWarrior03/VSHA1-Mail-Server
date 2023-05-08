@@ -104,7 +104,7 @@ public class Main {
                         if (!activeMailInfos.get(clientSocketChannel).isWriting) { // Wenn Datentransfer fertig ist
                             activeMailInfos.get(clientSocketChannel).storeMail(); // Speicher sie und entferne sie aus der Datenstruktur
                             activeMailInfos.remove(clientSocketChannel);
-                            response = "250 OK";
+                            response = "250 OK\r\n";
                         }
 
                     } else {
@@ -120,7 +120,7 @@ public class Main {
                                 }
                                 activeMailInfos.get(clientSocketChannel).setIsWriting(true);
                                 System.out.println("Handling Data Packet");
-                                response = "354 Start mail input; end with <CRLF>.<CRLF>";
+                                response = "354 Start mail input; end with <CRLF>.<CRLF>\r\n";
                                 break;
                             case "HELP":
                                 payload = message.substring(4, message.length() - 2);
@@ -184,7 +184,7 @@ public class Main {
                                 break;
                             case "QUIT":
                                 payload = message.substring(4, message.length() - 2);
-                                response = "221 " + hostname;
+                                response = "221 " + hostname + "\r\n";
                                 //TODO maybe kick client from selectors
                                 break;
                             default: //command doesn't match any len 4 command
@@ -194,9 +194,7 @@ public class Main {
                                     activeMailInfos.get(clientSocketChannel).addRCPT(rcpt);
                                     response = "250 OK\r\n";
                                 } else if (message.substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
-                                    if((message.length() - 2) > 11){
-                                        payload = message.substring(11, message.length() - 2);
-                                    }
+                                    payload = message.substring(11, message.length() - 2);
                                     activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
                                     String sender = payload; // TODO: Ersetzen durch eigentliche Message
                                     activeMailInfos.get(clientSocketChannel).setSender(sender);
