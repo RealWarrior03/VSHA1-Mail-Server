@@ -212,13 +212,12 @@ public class Main {
                                     response = "500 Command unrecognized, send \"HELP\"  for more information.\r\n";
                                 }
                         }
-                        clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
-
                     /*
                     clientSocketChannel.close();//!!Falsch!!
                     System.out.println("Client disconnected!");
                     */
                     }
+                    clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
                 }
                 selector.selectedKeys().clear();
             }
