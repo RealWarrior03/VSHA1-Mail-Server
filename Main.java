@@ -1,5 +1,4 @@
 package vs_uebung_2_gruppe_31;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.nio.*;
@@ -10,7 +9,6 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.Set;
 
 public class Main {
 
@@ -45,7 +43,7 @@ public class Main {
 
     public static int generateMessageID(LinkedList<Integer> idList) {
         Random rand = new Random();
-        Integer messageID = rand.nextInt(9999); //generate random number up to 9999
+        int messageID = rand.nextInt(9999); //generate random number up to 9999
         while (idList.contains(messageID)) { //if number is already used as an id
             messageID = rand.nextInt(9999); //generate a new number
         }
@@ -128,7 +126,6 @@ public class Main {
                     } else {
                         switch (message.toUpperCase().substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                             case "HELO":
-                                payload = message.substring(4, message.length() - 2);
                                 response = "250 " + hostname + " \r\n"; //answer according to a received HELO message
                                 break;
                             case "DATA":
@@ -163,11 +160,11 @@ public class Main {
                                                                                 
                                             The explanantions of the commands above are taken from the following website: https://mailtrap.io/blog/smtp-commands-and-responses/#HELP
                                             \r\n
+                                            
                                             """; //help for all supported commands is returned to the client
                                 }
                                 break;
                             case "QUIT":
-                                payload = message.substring(4, message.length() - 2);
                                 response = "221 " + hostname + "\r\n"; //answer according to a received QUIT message
                                 //TODO maybe kick client from selectors
                                 break;
@@ -187,10 +184,6 @@ public class Main {
                                     response = "500 Command unrecognized, send \"HELP\"  for more information.\r\n"; //command not known, reminder to ask for help
                                 }
                         }
-                    /*
-                    clientSocketChannel.close();//!!Falsch!!
-                    System.out.println("Client disconnected!");
-                    */
                     }
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
                 }
