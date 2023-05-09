@@ -20,13 +20,23 @@ public class MailInfo {
     SocketChannel channel;
     String data;
     boolean isWriting;
+
+    int order;
     MailInfo(SocketChannel channel){
         this.channel=channel;
         RCPT = new Stack<>();
         isWriting=false;
         data = "";
+        order = 0;
     }
 
+    public int getOrder() {
+        return order;
+    }
+
+    public void increaseOrder() {
+        order++;
+    }
     public String getData() {
         return data;
     }
