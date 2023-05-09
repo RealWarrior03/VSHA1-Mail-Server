@@ -128,12 +128,24 @@ public class Main {
                     } else {
                         switch (message.toUpperCase().substring(0, Math.min(message.length(), 4))) { //check commands with len 4 (math.min prevents an out of bounds error
                             case "HELO":
-                                response = "250 " + hostname + " \r\n"; //answer according to a received HELO message
+                                if(!activeMailInfos.containsKey(clientSocketChannel)){
+                                    activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
+                                    response = "250 " + hostname + " \r\n"; //answer according to a received HELO message
+                                }
+                                else{
+                                    response="503 Bad sequence of commands";
+                                }
+
                                 break;
                             case "DATA":
-                                activeMailInfos.get(clientSocketChannel).setIsWriting(true); //toggle isWriting to work with the next input as data for an e-mail
-                                System.out.println("Handling Data Packet"); //server side note of what is handled
-                                response = "354 Start mail input; end with <CRLF>.<CRLF>\r\n"; //inform client, that data is read until marking its end
+                                if(activeMailInfos.containsKey(clientSocketChannel) && activeMailInfos.get(clientSocketChannel).getOrder()==2) {
+                                    activeMailInfos.get(clientSocketChannel).setIsWriting(true); //toggle isWriting to work with the next input as data for an e-mail
+                                    System.out.println("Handling Data Packet"); //server side note of what is handled
+                                    response = "354 Start mail input; end with <CRLF>.<CRLF>\r\n"; //inform client, that data is read until marking its end
+                                }
+                                else {
+                                    response="503 Bad sequence of commands";
+                                }
                                 break;
                             case "HELP":
                                 payload = message.substring(4, message.length() - 2).toUpperCase();
@@ -172,16 +184,31 @@ public class Main {
                                 break;
                             default: //command doesn't match any len 4 command
                                 if (message.toUpperCase().substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
-                                    payload = message.substring(9, message.length() - 2); //get client name appended to the RCPT TO command
-                                    String rcpt = payload;
-                                    activeMailInfos.get(clientSocketChannel).addRCPT(rcpt); //add it to the list of known recipients
-                                    response = "250 OK\r\n";
+                                    if(activeMailInfos.containsKey(clientSocketChannel) &&
+                                            (activeMailInfos.get(clientSocketChannel).getOrder()==1||activeMailInfos.get(clientSocketChannel).getOrder()==2)) {
+                                        if(activeMailInfos.get(clientSocketChannel).getOrder()==1){
+                                            activeMailInfos.get(clientSocketChannel).increaseOrder();
+                                        }
+                                        payload = message.substring(9, message.length() - 2); //get client name appended to the RCPT TO command
+                                        String rcpt = payload;
+                                        activeMailInfos.get(clientSocketChannel).addRCPT(rcpt); //add it to the list of known recipients
+                                        response = "250 OK\r\n";
+                                    }
+                                    else {
+                                        response="503 Bad sequence of commands";
+                                    }
                                 } else if (message.toUpperCase().substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
-                                    payload = message.substring(11, message.length() - 2); //get client name appended to the MAIL FROM command
-                                    activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
-                                    String sender = payload;
-                                    activeMailInfos.get(clientSocketChannel).setSender(sender); //add the sender to the list of known senders
-                                    response = "250 OK\r\n";
+                                    if(activeMailInfos.containsKey(clientSocketChannel) && activeMailInfos.get(clientSocketChannel).getOrder()==0){
+                                        payload = message.substring(11, message.length() - 2); //get client name appended to the MAIL FROM command
+                                        String sender = payload;
+                                        activeMailInfos.get(clientSocketChannel).setSender(sender); //add the sender to the list of known senders
+                                        activeMailInfos.get(clientSocketChannel).increaseOrder();
+                                        response = "250 OK\r\n";
+                                    }
+                                    else {
+                                        response="503 Bad sequence of commands";
+                                    }
+
                                 } else {
                                     response = "500 Command unrecognized, send \"HELP\"  for more information.\r\n"; //command not known, reminder to ask for help
                                 }
