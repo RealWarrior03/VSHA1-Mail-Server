@@ -9,8 +9,22 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
+
+    // Regular expression for email validation
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+
+    // Compile the regular expression into a Pattern object for performance
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+
+    public static boolean isValid(String email) { //checks whether an email is in the valid format
+        Matcher matcher = EMAIL_PATTERN.matcher(email);  // Create a Matcher object using the email pattern
+        return matcher.matches(); // Check if the email matches the pattern and return the result
+    }
+
 
     // taken from the client
     private static boolean readCommandLine(SocketChannel socketChannel, ByteBuffer buffer) throws IOException {
@@ -184,15 +198,21 @@ public class Main {
                                 break;
                             default: //command doesn't match any len 4 command
                                 if (message.toUpperCase().substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
-                                    if(activeMailInfos.containsKey(clientSocketChannel) &&
+                                    if(activeMailInfos.containsKey(clientSocketChannel) &&  //checks if sequence of commands is complied with
                                             (activeMailInfos.get(clientSocketChannel).getOrder()==1||activeMailInfos.get(clientSocketChannel).getOrder()==2)) {
-                                        if(activeMailInfos.get(clientSocketChannel).getOrder()==1){
-                                            activeMailInfos.get(clientSocketChannel).increaseOrder();
-                                        }
+
                                         payload = message.substring(9, message.length() - 2); //get client name appended to the RCPT TO command
                                         String rcpt = payload;
-                                        activeMailInfos.get(clientSocketChannel).addRCPT(rcpt); //add it to the list of known recipients
-                                        response = "250 OK\r\n";
+
+                                        if (isValid(rcpt)) {
+                                            if(activeMailInfos.get(clientSocketChannel).getOrder()==1){
+                                                activeMailInfos.get(clientSocketChannel).increaseOrder();
+                                            }
+                                            activeMailInfos.get(clientSocketChannel).addRCPT(rcpt); //add it to the list of known recipients
+                                            response = "250 OK\r\n";
+                                        } else {
+                                            response = "550 invalid mail address format\r\n";
+                                        }
                                     }
                                     else {
                                         response="503 Bad sequence of commands\r\n";
@@ -201,9 +221,14 @@ public class Main {
                                     if(activeMailInfos.containsKey(clientSocketChannel) && activeMailInfos.get(clientSocketChannel).getOrder()==0){
                                         payload = message.substring(11, message.length() - 2); //get client name appended to the MAIL FROM command
                                         String sender = payload;
-                                        activeMailInfos.get(clientSocketChannel).setSender(sender); //add the sender to the list of known senders
-                                        activeMailInfos.get(clientSocketChannel).increaseOrder();
-                                        response = "250 OK\r\n";
+
+                                        if (isValid(sender)) {
+                                            activeMailInfos.get(clientSocketChannel).setSender(sender); //add the sender to the list of known senders
+                                            activeMailInfos.get(clientSocketChannel).increaseOrder();
+                                            response = "250 OK\r\n";
+                                        } else {
+                                            response = "550 invalid mail address format\r\n";
+                                        }
                                     }
                                     else {
                                         response="503 Bad sequence of commands\r\n";

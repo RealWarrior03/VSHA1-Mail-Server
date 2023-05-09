@@ -77,7 +77,7 @@ public class MailInfo {
 
         for (String recipient: RCPT) {
             new File("./storedMails/" + recipient).mkdirs();
-            f = new FileOutputStream("./storedMails/"+recipient+"/"+sender+"_"+messageID);//#TODO Message ID
+            f = new FileOutputStream("./storedMails/"+recipient+"/"+sender+"_"+messageID);
             FileChannel ch = f.getChannel();
             ch.write(buf);
             ch.close();
