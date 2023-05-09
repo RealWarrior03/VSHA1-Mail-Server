@@ -67,9 +67,10 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         //String hostname = java.net.InetAddress.getLocalHost().getHostName();
-        String hostname = "localhost";
+        String hostname = args[0];
+        int port = Integer.parseInt(args[1]);
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(new InetSocketAddress(hostname, 2525));
+        serverSocketChannel.bind(new InetSocketAddress(hostname, port));
 
 
         serverSocketChannel.configureBlocking(false);
@@ -94,15 +95,7 @@ public class Main {
                     clientSocketChannel.configureBlocking(false);
                     clientSocketChannel.register(selector, SelectionKey.OP_READ);
                     System.out.println("Client connected!");
-
-                    //trying to create US ASCII charset for messages
-                    try {
-                        Charset messageCharset = StandardCharsets.US_ASCII; //#TODO Never used, maybe remove??
-                    } catch (UnsupportedCharsetException uce) {
-                        System.err.println("Cannot create charset for this application. Exiting...");
-                        System.exit(1);
-                    }
-
+                    
                     //server is ready to communicate with clients
                     String response = "220 " + hostname + " Simple Mail Transfer Service Ready\r\n";
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));

@@ -13,6 +13,7 @@ import java.util.Stack;
  * Class stores the information already received by the server regarding an email and
  * saves the file with the emails content into the right folder.
  * It also stores the information about the state of the client regarding the DATA message in the isWriting boolean.
+ * The order variable stores information about the sequence of commands the client is sending
  */
 public class MailInfo {
     String sender;
@@ -20,8 +21,8 @@ public class MailInfo {
     SocketChannel channel;
     String data;
     boolean isWriting;
-
     int order;
+
     MailInfo(SocketChannel channel){
         this.channel=channel;
         RCPT = new Stack<>();
