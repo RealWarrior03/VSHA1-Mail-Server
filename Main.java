@@ -138,8 +138,7 @@ public class Main {
                                 if(!activeMailInfos.containsKey(clientSocketChannel)){
                                     activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
                                     response = "250 " + hostname + " \r\n"; //answer according to a received HELO message
-                                }
-                                else{
+                                } else {
                                     response="503 Bad sequence of commands\r\n";
                                 }
 
@@ -166,9 +165,9 @@ public class Main {
                                 } else if (payload.equals(" RCPT TO")) {
                                     response = code + "RCPT TO - The RCPT TO command specifies the recipient. As an argument, RCPT TO includes a destination mailbox (forward-path). In case of multiple recipients, RCPT TO will be used to specify each recipient separately.\r\n";
                                 } else if (payload.equals(" DATA")) {
-                                    response = code + "DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.";
+                                    response = code + "DATA - With the DATA command, the client asks the server for permission to transfer the mail data. The response code 354 grants permission, and the client launches the delivery of the email contents line by line. This includes the date, from header, subject line, to header, attachments, and body text.\r\n";
                                 } else if (payload.equals(" QUIT")) {
-                                    response = code + "QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.";
+                                    response = code + "QUIT - The QUIT command send the request to terminate the SMTP session. Once the server responses with 221, the client closes the SMTP connection.\r\n";
                                 } else {
                                     response = code + """
                                              The following commands are supported:
@@ -181,7 +180,6 @@ public class Main {
                                                                                 
                                             The explanantions of the commands above are taken from the following website: https://mailtrap.io/blog/smtp-commands-and-responses/#HELP
                                             \r\n
-                                            
                                             """; //help for all supported commands is returned to the client
                                 }
                                 break;
