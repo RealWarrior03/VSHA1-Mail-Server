@@ -133,7 +133,7 @@ public class Main {
                                     response = "250 " + hostname + " \r\n"; //answer according to a received HELO message
                                 }
                                 else{
-                                    response="503 Bad sequence of commands";
+                                    response="503 Bad sequence of commands\r\n";
                                 }
 
                                 break;
@@ -144,7 +144,7 @@ public class Main {
                                     response = "354 Start mail input; end with <CRLF>.<CRLF>\r\n"; //inform client, that data is read until marking its end
                                 }
                                 else {
-                                    response="503 Bad sequence of commands";
+                                    response="503 Bad sequence of commands\r\n";
                                 }
                                 break;
                             case "HELP":
@@ -195,7 +195,7 @@ public class Main {
                                         response = "250 OK\r\n";
                                     }
                                     else {
-                                        response="503 Bad sequence of commands";
+                                        response="503 Bad sequence of commands\r\n";
                                     }
                                 } else if (message.toUpperCase().substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
                                     if(activeMailInfos.containsKey(clientSocketChannel) && activeMailInfos.get(clientSocketChannel).getOrder()==0){
@@ -206,7 +206,7 @@ public class Main {
                                         response = "250 OK\r\n";
                                     }
                                     else {
-                                        response="503 Bad sequence of commands";
+                                        response="503 Bad sequence of commands\r\n";
                                     }
 
                                 } else {
@@ -222,5 +222,3 @@ public class Main {
         }
     }
 }
-
-//503 Bad sequence of commands
