@@ -1,6 +1,7 @@
 # TODO
 - Comment Code
   - main should be done
+  - MailInfo should be done
 - Test Edge Cases
 - Test with telnet
 - record video
