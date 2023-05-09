@@ -9,6 +9,7 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
+import javax.mail.internet.InternetAddress;
 
 public class Main {
 
@@ -93,6 +94,8 @@ public class Main {
                     String response = "220 " + hostname + " Simple Mail Transfer Service Ready\r\n";
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
                 } else if (key.isReadable()) {
+                    boolean shouldQuit = false; //boolean to check if we should close client socket
+
                     // handle the incoming data from the client
                     SocketChannel clientSocketChannel = (SocketChannel) key.channel();
                     ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -134,7 +137,7 @@ public class Main {
                                 response = "354 Start mail input; end with <CRLF>.<CRLF>\r\n"; //inform client, that data is read until marking its end
                                 break;
                             case "HELP":
-                                payload = message.substring(4, message.length() - 2);
+                                payload = message.substring(4, message.length() - 2).toUpperCase();
                                 String code = "214 ";
 
                                 //if the client requests HELP for a specific command, the information for that command only is returned, otherwise a list of all commands is returned
@@ -166,8 +169,7 @@ public class Main {
                                 break;
                             case "QUIT":
                                 response = "221 " + hostname + "\r\n"; //answer according to a received QUIT message
-                                //#TODO maybe kick client from selectors
-                                clientSocketChannel.close();
+                                shouldQuit = true;
                                 break;
                             default: //command doesn't match any len 4 command
                                 if (message.toUpperCase().substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
@@ -187,9 +189,12 @@ public class Main {
                         }
                     }
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
+                    if(shouldQuit){clientSocketChannel.close();}
                 }
                 selector.selectedKeys().clear();
             }
         }
     }
 }
+
+//503 Bad sequence of commands

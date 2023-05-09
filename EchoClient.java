@@ -15,11 +15,9 @@ public class EchoClient {
         ec.sendMessage("HELO\r\n");
         ec.sendMessage("MAIL FROM: abc\r\n");
         ec.sendMessage("RCPT TO: def\r\n");
-        ec.sendMessage("RCPT TO: gih\r\n");
         ec.sendMessage("DATA\r\n");
-        ec.sendMessage("bliblablub\r\n.\r\n");
-        ec.sendMessage("DATA\r\n");
-        ec.sendMessage("1\r\n.\r\n");
+        ec.sendMessage("äöüß\r\n.\r\n");
+        ec.sendMessage("QUIT\r\n");
     }
 
     public static EchoClient start() {
