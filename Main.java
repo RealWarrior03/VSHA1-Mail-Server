@@ -9,7 +9,6 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
-import javax.mail.internet.InternetAddress;
 
 public class Main {
 
