@@ -167,6 +167,7 @@ public class Main {
                             case "QUIT":
                                 response = "221 " + hostname + "\r\n"; //answer according to a received QUIT message
                                 //#TODO maybe kick client from selectors
+                                clientSocketChannel.close();
                                 break;
                             default: //command doesn't match any len 4 command
                                 if (message.toUpperCase().substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
