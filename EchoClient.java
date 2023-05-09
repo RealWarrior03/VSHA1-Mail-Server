@@ -18,9 +18,8 @@ public class EchoClient {
         ec.sendMessage("RCPT TO: gih\r\n");
         ec.sendMessage("DATA\r\n");
         ec.sendMessage("bliblablub\r\n.\r\n");
-
-
-
+        ec.sendMessage("DATA\r\n");
+        ec.sendMessage("1\r\n.\r\n");
     }
 
     public static EchoClient start() {
@@ -50,7 +49,8 @@ public class EchoClient {
         try {
             client.write(buffer);
             buffer.clear();
-            buffer = ByteBuffer.allocate(256);
+            //buffer = ByteBuffer.allocate(256);
+            buffer = ByteBuffer.allocate(4096);
             client.read(buffer);
             response = new String(buffer.array()).trim();
             System.out.println("response=" + response);

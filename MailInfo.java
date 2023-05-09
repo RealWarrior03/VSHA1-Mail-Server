@@ -23,6 +23,10 @@ public class MailInfo {
         data = "";
     }
 
+    public String getData() {
+        return data;
+    }
+
     public String getSender() {
         return sender;
     }
