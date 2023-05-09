@@ -1,5 +1,6 @@
 # TODO
 - Comment Code
+  - main should be done
 - Test Edge Cases
 - Test with telnet
 - record video

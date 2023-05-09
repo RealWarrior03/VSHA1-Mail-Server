@@ -67,7 +67,7 @@ public class Main {
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
         HashMap<SocketChannel, MailInfo> activeMailInfos = new HashMap<>();
-        LinkedList<Integer> messageIDs = new LinkedList<>();
+        LinkedList<Integer> messageIDs = new LinkedList<>(); //list of all used id's for messages
 
 
         // listen for incoming client connections
@@ -83,6 +83,7 @@ public class Main {
                     clientSocketChannel.register(selector, SelectionKey.OP_READ);
                     System.out.println("Client connected!");
 
+                    //trying to create US ASCII charset for messages
                     try {
                         Charset messageCharset = StandardCharsets.US_ASCII;
                     } catch (UnsupportedCharsetException uce) {
@@ -90,6 +91,7 @@ public class Main {
                         System.exit(1);
                     }
 
+                    //server is ready to communicate with clients
                     String response = "220 " + hostname + " Simple Mail Transfer Service Ready\r\n";
                     clientSocketChannel.write(ByteBuffer.wrap(response.getBytes()));
                 } else if (key.isReadable()) {
@@ -100,6 +102,7 @@ public class Main {
                     if (!readCommandLine(clientSocketChannel, buffer))
                         continue;
 
+                    //get bytes from buffer and construct a string representing a received message
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
                     String message = new String(bytes);
