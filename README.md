@@ -5,6 +5,7 @@
 - Test Edge Cases
 - Test with telnet
 - record video
+- Do all characters work?(äüöß)
 
 # BUGS
 - rcpt to if there is no rcpt parameter given

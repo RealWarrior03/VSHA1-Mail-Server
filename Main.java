@@ -43,7 +43,7 @@ public class Main {
 
     public static int generateMessageID(LinkedList<Integer> idList) {
         Random rand = new Random();
-        int messageID = rand.nextInt(9999); //generate random number up to 9999
+        int messageID = rand.nextInt(9999); //generate random natural number up to 9999
         while (idList.contains(messageID)) { //if number is already used as an id
             messageID = rand.nextInt(9999); //generate a new number
         }
@@ -55,7 +55,7 @@ public class Main {
         //String hostname = java.net.InetAddress.getLocalHost().getHostName();
         String hostname = "localhost";
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(new InetSocketAddress(hostname, 2525)); // hab hostname durch "localhost ersetzt dann gings wierder"
+        serverSocketChannel.bind(new InetSocketAddress(hostname, 2525));
 
 
         serverSocketChannel.configureBlocking(false);
@@ -166,7 +166,7 @@ public class Main {
                                 break;
                             case "QUIT":
                                 response = "221 " + hostname + "\r\n"; //answer according to a received QUIT message
-                                //TODO maybe kick client from selectors
+                                //#TODO maybe kick client from selectors
                                 break;
                             default: //command doesn't match any len 4 command
                                 if (message.toUpperCase().substring(0, Math.min(message.length(), 9)).equals("RCPT TO: ")) { //check for rcpt to command
@@ -177,7 +177,7 @@ public class Main {
                                 } else if (message.toUpperCase().substring(0, Math.min(message.length(), 11)).equals("MAIL FROM: ")) { //check for mail from command
                                     payload = message.substring(11, message.length() - 2); //get client name appended to the MAIL FROM command
                                     activeMailInfos.put(clientSocketChannel, new MailInfo(clientSocketChannel));
-                                    String sender = payload; // TODO: Ersetzen durch eigentliche Message
+                                    String sender = payload;
                                     activeMailInfos.get(clientSocketChannel).setSender(sender); //add the sender to the list of known senders
                                     response = "250 OK\r\n";
                                 } else {
