@@ -7,9 +7,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 import java.util.Stack;
 
+/**
+ * Class stores the information already received by the server regarding an email and
+ * saves the file with the emails content into the right folder.
+ * It also stores the information about the state of the client regarding the DATA message in the isWriting boolean.
+ */
 public class MailInfo {
     String sender;
     Stack<String> RCPT;
@@ -55,7 +59,7 @@ public class MailInfo {
         isWriting = a;
     }
 
-    public void storeMail(int messageID) throws IOException {
+    public void storeMail(int messageID) throws IOException {       //stores the mail with the information of the MailInfo-Object in the right directory and the passed MessageID in the storedMails Folder
         ByteBuffer buf = ByteBuffer.allocate(data.length()*2);
         buf.put(data.getBytes());
         buf.flip();
@@ -69,10 +73,6 @@ public class MailInfo {
             ch.close();
             buf.clear();
         }
-
-    }
-
-    public static void main(String[] args) throws IOException {
 
     }
 }

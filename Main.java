@@ -55,7 +55,7 @@ public class Main {
         //String hostname = java.net.InetAddress.getLocalHost().getHostName();
         String hostname = "localhost";
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(new InetSocketAddress(hostname, 2525)); // hab hostname durch "localhost ersetzt fdann gings wierder"
+        serverSocketChannel.bind(new InetSocketAddress(hostname, 2525)); // hab hostname durch "localhost ersetzt dann gings wierder"
 
 
         serverSocketChannel.configureBlocking(false);
@@ -64,7 +64,7 @@ public class Main {
         Selector selector = Selector.open();
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        HashMap<SocketChannel, MailInfo> activeMailInfos = new HashMap<>();
+        HashMap<SocketChannel, MailInfo> activeMailInfos = new HashMap<>(); //HashMap of MailInfo Objects, which stores all the information about mails
         LinkedList<Integer> messageIDs = new LinkedList<>(); //list of all used id's for messages
 
 
@@ -83,7 +83,7 @@ public class Main {
 
                     //trying to create US ASCII charset for messages
                     try {
-                        Charset messageCharset = StandardCharsets.US_ASCII;
+                        Charset messageCharset = StandardCharsets.US_ASCII; //#TODO Never used, maybe remove??
                     } catch (UnsupportedCharsetException uce) {
                         System.err.println("Cannot create charset for this application. Exiting...");
                         System.exit(1);
